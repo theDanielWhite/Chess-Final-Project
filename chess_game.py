@@ -2,6 +2,7 @@
 
 import pygame as p
 import chess_board
+# import chess
 
 
 width = 800
@@ -25,6 +26,8 @@ def main():
     clock = p.time.Clock()
     screen.fill(p.Color("white"))
     game_state = chess_board.Board()
+    legalMoves = game_state.valid_moves()
+    moveMade = False
     image_load()
     game_run = True
     curr_file = ()
@@ -46,10 +49,20 @@ def main():
                 if len(click_pos) == 2:
                     move = chess_board.MovePiece(click_pos[0], click_pos[1], game_state.display)
                     print(move.getBoardLocation())
-                    game_state.makeMove(move)
-                    curr_file = ()
-                    click_pos = []
-
+                    if move in legalMoves:
+                        game_state.makeMove(move)
+                        moveMade = True
+                        curr_file = ()
+                        click_pos = []
+                    else:
+                        click_pos = [curr_file]
+            elif e.type == p.KEYDOWN:
+                if e.key == p.K_BACKSPACE:
+                    game_state.take_back()
+                    moveMade = True
+        if moveMade:
+            legalMoves = game_state.valid_moves()
+            moveMade = False
         disp_game(screen, game_state)
         clock.tick(fps)
         p.display.flip()
