@@ -27,12 +27,28 @@ def main():
     game_state = chess_board.Board()
     image_load()
     game_run = True
+    curr_file = ()
+    click_pos = []
     while game_run:
         for e in p.event.get():
             if e.type == p.QUIT:
                 game_run = False
             elif e.type == p.MOUSEBUTTONDOWN:
                 position = p.mouse.get_pos()
+                x_pos = position[0]//file_size
+                y_pos = position[1]//file_size
+                if curr_file == (y_pos, x_pos):
+                    curr_file = ()
+                    click_pos = []
+                else:
+                    curr_file = (y_pos, x_pos)
+                    click_pos.append(curr_file)
+                if len(click_pos) == 2:
+                    move = chess_board.MovePiece(click_pos[0], click_pos[1], game_state.display)
+                    print(move.getBoardLocation())
+                    game_state.makeMove(move)
+                    curr_file = ()
+                    click_pos = []
 
         disp_game(screen, game_state)
         clock.tick(fps)
@@ -45,7 +61,7 @@ def disp_game(screen, game_state):
 
 
 def dispBoard(screen):
-    board_colors = [p.Color(255, 228, 196), p.Color(205, 133, 63)]
+    board_colors = [p.Color(255, 206, 158), p.Color(209, 139, 71)]
     for row in range(board_dimension):
         for col in range(board_dimension):
             color = board_colors[((row + col) % 2)]
