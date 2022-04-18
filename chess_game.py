@@ -62,13 +62,28 @@ def main():
         if moveMade:
             legalMoves = game_state.valid_moves()
             moveMade = False
-        disp_game(screen, game_state)
+        disp_game(screen, game_state, legalMoves, curr_file)
         clock.tick(fps)
         p.display.flip()
 
 
-def disp_game(screen, game_state):
+def highlight(screen, game_state, valid_moves, curr_file):
+    if curr_file != ():
+        row, col = curr_file
+        if game_state.display[row][col][0] == ('w' if game_state.whiteToMove else 'b'):
+            surf = p.Surface((file_size, file_size))
+            surf.set_alpha(175)
+            surf.fill(p.Color(250, 250, 250))
+            screen.blit(surf, (col * file_size, row * file_size))
+            surf.fill(p.Color(229, 57, 53))
+            for move in valid_moves:
+                if move.start_x_pos == row and move.start_y_pos == col:
+                    screen.blit(surf, (move.end_y_pos * file_size, move.end_x_pos * file_size))
+
+
+def disp_game(screen, game_state, valid_moves, curr_file):
     dispBoard(screen)
+    highlight(screen, game_state, valid_moves, curr_file)
     dispPieces(screen, game_state.display)
 
 
