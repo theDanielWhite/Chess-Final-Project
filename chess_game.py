@@ -2,7 +2,6 @@
 
 import pygame as p
 import chess_board
-# import chess
 
 
 width = 800
@@ -48,12 +47,12 @@ def main():
                     click_pos.append(curr_file)
                 if len(click_pos) == 2:
                     move = chess_board.MovePiece(click_pos[0], click_pos[1], game_state.display)
-                    print(move.getBoardLocation())
                     if move in legalMoves:
                         game_state.makeMove(move)
                         moveMade = True
                         curr_file = ()
                         click_pos = []
+                        print(move.getBoardLocation())
                     else:
                         click_pos = [curr_file]
             elif e.type == p.KEYDOWN:

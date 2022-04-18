@@ -15,15 +15,42 @@ class Board:
         ]
         self.whiteToMove = True
         self.moveLog = []
+        self.whiteKingPos = (7, 4)
+        self.blackKingPos = (0, 4)
+        self.checkmate = False
+        self.stalemate = False
 
     def makeMove(self, move):
         self.display[move.start_x_pos][move.start_y_pos] = "--"
         self.display[move.end_x_pos][move.end_y_pos] = move.moved_piece
         self.moveLog.append(move)
         self.whiteToMove = not self.whiteToMove
+        if move.moved_piece == "wK":
+            self.whiteKingPos = (move.end_x_pos, move.end_y_pos)
+        elif move.moved_piece == "bK":
+            self.blackKingPos = (move.end_x_pos, move.end_y_pos)
 
     def valid_moves(self):
-        return self.allPossibleMoves()
+        all_valid_moves = self.allPossibleMoves()
+        curr_kingPos = self.whiteKingPos if self.whiteToMove else self.blackKingPos
+        for i in range(len(all_valid_moves)-1, -1, -1):
+            self.makeMove(all_valid_moves[i])
+            self.whiteToMove = not self.whiteToMove
+            if self.check():
+                all_valid_moves.remove(all_valid_moves[i])
+            self.whiteToMove = not self.whiteToMove
+            self.take_back()
+        if len(all_valid_moves) == 0:
+            if self.check():
+                print('CHECKMATE!\n' + (f'White' if not self.whiteToMove else 'Black') + ' Wins')
+                self.checkmate = True
+            else:
+                print('Draw due to\nSTALEMATE')
+                self.stalemate = True
+        else:
+            self.checkmate = False
+            self.stalemate = False
+        return all_valid_moves
 
     def take_back(self):
         if len(self.moveLog) != 0:
@@ -31,6 +58,28 @@ class Board:
             self.display[move.start_x_pos][move.start_y_pos] = move.moved_piece
             self.display[move.end_x_pos][move.end_y_pos] = move.captured_piece
             self.whiteToMove = not self.whiteToMove
+            if move.moved_piece == "wK":
+                self.whiteKingPos = (move.start_x_pos, move.start_y_pos)
+            if move.moved_piece == "bK":
+                self.blackKingPos = (move.start_x_pos, move.start_y_pos)
+        else:
+            print('No move has been made previously. Cannot undo initial board.')
+            return
+
+    def check(self):
+        if self.whiteToMove:
+            return self.file_under_attack(self.whiteKingPos[0], self.whiteKingPos[1])
+        else:
+            return self.file_under_attack(self.blackKingPos[0], self.blackKingPos[1])
+
+    def file_under_attack(self, row, col):
+        self.whiteToMove = not self.whiteToMove
+        enemyLegalMoves = self.allPossibleMoves()
+        self.whiteToMove = not self.whiteToMove
+        for m in enemyLegalMoves:
+            if m.end_x_pos == row and m.end_y_pos == col:
+                return True
+        return False
 
     def allPossibleMoves(self):
         moves = []
