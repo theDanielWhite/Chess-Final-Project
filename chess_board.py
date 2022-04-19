@@ -32,7 +32,7 @@ class Board:
 
     def valid_moves(self):
         all_valid_moves = self.allPossibleMoves()
-        curr_kingPos = self.whiteKingPos if self.whiteToMove else self.blackKingPos
+        # curr_kingPos = self.whiteKingPos if self.whiteToMove else self.blackKingPos
         for i in range(len(all_valid_moves)-1, -1, -1):
             self.makeMove(all_valid_moves[i])
             self.whiteToMove = not self.whiteToMove

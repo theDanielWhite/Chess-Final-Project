@@ -59,6 +59,12 @@ def main():
                 if e.key == p.K_BACKSPACE:
                     game_state.take_back()
                     moveMade = True
+                if e.key == p.K_r:
+                    game_state = chess_board.Board()
+                    curr_file = ()
+                    click_pos = []
+                    moveMade = False
+                    legalMoves = game_state.valid_moves()
         if moveMade:
             legalMoves = game_state.valid_moves()
             moveMade = False
